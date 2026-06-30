@@ -1,0 +1,26 @@
+
+table {
+  border-collapse: collapse;
+}
+
+td {
+  width: 30px;
+  height: 30px;
+  border: 1px solid black;
+  text-align: center;
+}
+
+h1{
+  text-align: center;
+}
+
+.tetris-game-container{
+  display: none;
+  justify-content: center;
+}
+
+.btn-container{
+  display: flex;
+  justify-content: center;
+
+}
