@@ -24,7 +24,7 @@ const speedInfo = {
   fast: 50
 };
 
-let greyTetroInfoArr = [];
+// let greyTetroInfoArr = [];
 
 let speed = speedInfo.base;
 let deleteRow = false;
@@ -187,19 +187,6 @@ const Z_Tetromino = new Tetromino(
   "red",
  
 );  
-
-function changeDataTemp(){
-  // console.log(tetroArr[0].shape)
-   const shape = tetroArr[0].shape;
-   let rotatedShape;
-   if(tetroArr[0].tempRotatedShape.length === 0){
-     rotatedShape = tetroArr[0].tempRotate(shape);
-     console.log('first rotated', rotatedShape)
-   }else{
-     rotatedShape = tetroArr[0].tempRotate(tetroArr[0].tempRotatedShape);
-     console.log('not first rotated', rotatedShape)
-   }
- }
 
 function drawEmptyTetrisTable(){
   for (let i = 0; i < rows; i++) { // Create 20 rows
@@ -715,22 +702,18 @@ showGreyTetro();
 
 function checkUserInputDown(event){
   if(isEnabled) return;
-
+  // console.log(window.pageYOffset)
   const keyName = event.key;
   const eventType = event.type;
 
   switch (keyName) {
     case 'ArrowLeft':
-     // console.log(keyName);
-    // clearTimeout(timerID);
      moveToLeft(keyName);
       break;
     case 'ArrowRight':
-      //clearTimeout(timerID);
       moveToRight(keyName);
       break;
     case 'ArrowUp':
-     // clearTimeout(timerID);
       rotateTetro(keyName);
       break;
     case 'ArrowDown':
@@ -742,38 +725,32 @@ function checkUserInputDown(event){
       break;
   }
   
-  // event.preventDefault(); 
+  event.preventDefault(); 
   // Optional: Prevent the default browser action (e.g., scrolling)
   
   return keyName;
 }
 
 function checkUserInputUp(event){
+
   const keyName = event.key;
   const eventType = event.type;
   speed = speedInfo.base;
   switch(keyName){
     case 'ArrowDown':
-      //console.log('arrowDown up')
       changeSpeed(eventType);
       break;
     case 'ArrowLeft':
-      //console.log('arrowLeft up');
-     // moveTetromino();
-      //timerID =  setTimeout(moveTetromino, speed);
       break;
     case 'ArrowRight':
-     // console.log('arrowRight up');
-     // timerID =  setTimeout(moveTetromino, speed);
       break;
     case 'ArrowUp':
-     // console.log('ArrowUp');
-     // timerID =  setTimeout(moveTetromino, speed);
       break;  
     default:
 
     break; 
   }
+
 }
 
 function deleteTetrisTable(){
@@ -932,7 +909,6 @@ function moveTetromino(){
       // 테트리스 데이터 정보 변경
       firstRowInfo = firstRowInfo === -1 ? 0 : firstRowInfo;
 
-      console.log(firstRowInfo)
       for(let j = firstRowInfo; j < result.fullRowIndex[i]; j++){
 
         tetrisTableDataArr[j].forEach(eachCol => { 
@@ -1098,7 +1074,7 @@ function checkGameOver(){
 function startGame(){
 
     gameStartBtn.disabled = true;
-    tetrisGameContainer.style.display = "flex";
+    tetrisGameContainer.style.display = "grid";
     drawEmptyTetrisTable();
     
     const nextTetro = pickNextTetro();
@@ -1121,6 +1097,8 @@ function pauseGame(){
    gamePauseBtn.textContent = 'Resume';
   }
 }
+
+document.addEventListener('scroll', checkUserInputDown);
 
 document.addEventListener('keydown', checkUserInputDown);
 document.addEventListener('keyup', checkUserInputUp);
