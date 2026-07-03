@@ -1106,3 +1106,5 @@ document.addEventListener('keyup', checkUserInputUp);
 gameStartBtn.addEventListener('click', startGame);
 gamePauseBtn.addEventListener('click', pauseGame);
 
+
+console.log('hello')
