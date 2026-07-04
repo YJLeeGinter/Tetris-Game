@@ -17,28 +17,31 @@ td {
 h1{
   margin-top: 1rem;
   text-align: center;
-  color: #4CAF50;
+  color:palevioletred;
 }
 
 .tetris-game-container{
-  display: none;
+  display: flex;
   
 }
 
-.tetris-game-container {
-  grid-template-columns: 1fr auto 1fr; 
+#tetris{
+  height: 100px;
+}
+
+@media screen and (min-width: 650px) {
+  .tetris-game-container {
+    grid-template-columns: 1fr auto 1fr; 
   align-items: center;
   width: 100%;
-
+  gap: 2rem;
   }
 
-  .tetro-container{
-    
+  .tetro-container{ 
     align-self: flex-start;
     display: flex;
     flex-direction: column;
     align-items: flex-end; /* Aligns the stacked items to the right */
-    gap: 10px;   
   }
   
   #tetris{
@@ -46,6 +49,11 @@ h1{
     text-align: center;
     height: auto;
   }
+
+}
+
+
+  
 
 
 .btn-container{

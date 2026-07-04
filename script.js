@@ -1074,7 +1074,7 @@ function checkGameOver(){
 function startGame(){
 
     gameStartBtn.disabled = true;
-    tetrisGameContainer.style.display = "grid";
+   // tetrisGameContainer.style.display = "grid";
     drawEmptyTetrisTable();
     
     const nextTetro = pickNextTetro();
@@ -1098,7 +1098,9 @@ function pauseGame(){
   }
 }
 
-document.addEventListener('scroll', checkUserInputDown);
+document.addEventListener('scroll',() => {
+  console.log('Current scroll position:', window.scrollY);
+} );
 
 document.addEventListener('keydown', checkUserInputDown);
 document.addEventListener('keyup', checkUserInputUp);
@@ -1106,5 +1108,3 @@ document.addEventListener('keyup', checkUserInputUp);
 gameStartBtn.addEventListener('click', startGame);
 gamePauseBtn.addEventListener('click', pauseGame);
 
-
-console.log('hello')
