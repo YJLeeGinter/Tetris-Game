@@ -719,10 +719,6 @@ function checkUserInputDown(event){
     case 'ArrowDown':
       changeSpeed(eventType);
       break;
-    case 'p':
-      console.log(keyName, 'test start')
-      changeDataTemp();
-      break;
   }
   
   event.preventDefault(); 
@@ -1098,13 +1094,48 @@ function pauseGame(){
   }
 }
 
-document.addEventListener('scroll',() => {
-  console.log('Current scroll position:', window.scrollY);
-} );
-
 document.addEventListener('keydown', checkUserInputDown);
 document.addEventListener('keyup', checkUserInputUp);
 
 gameStartBtn.addEventListener('click', startGame);
 gamePauseBtn.addEventListener('click', pauseGame);
 
+tetrisGameContainer.addEventListener('touchstart', function (event) {
+  touchstartX = event.changedTouches[0].screenX;
+  touchstartY = event.changedTouches[0].screenY;
+}, false);
+
+tetrisGameContainer.addEventListener('touchend', function (event) {
+  touchendX = event.changedTouches[0].screenX;
+  touchendY = event.changedTouches[0].screenY;
+  handleGesture();
+}, false);
+
+
+function handleGesture() {
+  if (touchendX < touchstartX) {
+      console.log('Swiped Left');
+      let keyName = 'Swiped Left';
+      moveToLeft(keyName);
+  }
+
+  if (touchendX > touchstartX) {
+      console.log('Swiped Right');
+      let keyName = 'Swiped Right';
+      moveToRight(keyName);
+  }
+
+  if (touchendY < touchstartY) {
+      console.log('Swiped Up');
+      let keyName = 'Swiped Up';
+      rotateTetro(keyName);
+  }
+
+  if (touchendY > touchstartY) {
+      console.log('Swiped Down');
+  }
+
+  if (touchendY === touchstartY) {
+      console.log('Tap');
+  }
+}
