@@ -1127,8 +1127,7 @@ function handleGesture() {
 
   if (touchendY < touchstartY) {
       console.log('Swiped Up');
-      let keyName = 'Swiped Up';
-      rotateTetro(keyName);
+      
   }
 
   if (touchendY > touchstartY) {
@@ -1137,5 +1136,7 @@ function handleGesture() {
 
   if (touchendY === touchstartY) {
       console.log('Tap');
+      let keyName = 'Tap'
+      rotateTetro(keyName);
   }
 }
