@@ -1070,7 +1070,7 @@ function checkGameOver(){
 function startGame(){
 
     gameStartBtn.disabled = true;
-   // tetrisGameContainer.style.display = "grid";
+    tetrisGameContainer.classList.add('tetris-game-container-active');
     drawEmptyTetrisTable();
     
     const nextTetro = pickNextTetro();
@@ -1101,6 +1101,7 @@ gameStartBtn.addEventListener('click', startGame);
 gamePauseBtn.addEventListener('click', pauseGame);
 
 tetrisGameContainer.addEventListener('touchstart', function (event) {
+  console.log(event)
   touchstartX = event.changedTouches[0].screenX;
   touchstartY = event.changedTouches[0].screenY;
 }, false);
@@ -1132,6 +1133,7 @@ function handleGesture() {
 
   if (touchendY > touchstartY) {
       console.log('Swiped Down');
+      
   }
 
   if (touchendY === touchstartY) {
