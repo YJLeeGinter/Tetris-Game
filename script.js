@@ -1104,11 +1104,15 @@ tetrisGameContainer.addEventListener('touchstart', function (event) {
   console.log(event)
   touchstartX = event.changedTouches[0].screenX;
   touchstartY = event.changedTouches[0].screenY;
+  event.preventDefault(); 
+
 }, false);
 
 tetrisGameContainer.addEventListener('touchend', function (event) {
   touchendX = event.changedTouches[0].screenX;
   touchendY = event.changedTouches[0].screenY;
+  event.preventDefault(); 
+
   handleGesture();
 }, false);
 
