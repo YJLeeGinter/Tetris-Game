@@ -1067,7 +1067,7 @@ function checkGameOver(){
   return false;
 }
 
-function startGame(){
+function startGame(event){
 
     gameStartBtn.disabled = true;
     tetrisGameContainer.classList.add('tetris-game-container-active');
@@ -1081,6 +1081,7 @@ function startGame(){
 
     speed = speedInfo.base;
     timerID = setTimeout(moveTetromino, speed);
+    event.preventDefault(); 
 
 }
 
