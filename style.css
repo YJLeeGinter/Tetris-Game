@@ -26,6 +26,7 @@ h2{
 .tetris-game-container-active{
   display: flex;
   gap: 0.5rem;
+  height: 80vh;
 }
 
 .tetro-container{

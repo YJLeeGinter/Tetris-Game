@@ -39,6 +39,7 @@ class Tetromino {
       this._size;
       this.active = 0;
       this.rotatedShape = []; // 빈 배열을 truty value. truty or false value 차이점이 버그를 발생시킬 수 있다.
+      this.greyPosArr = [];
     } 
 
     // 각 테트로 크기 구하기
@@ -405,7 +406,7 @@ const greyRowArr = [];
   }
   
   tetrisTable.rows[rowIndex].cells[colIndex].style.backgroundColor ='grey';
-  
+
 }
 
   }
@@ -567,7 +568,6 @@ function changeSpeed (eventType){
   }
 }
 
-
 function rotateTetro(){
   const activeTetro = findActiveTetro();
   const currentTetrominoArr = findCurrentStat(tetrisTableDataArr, {currentStatus : 1});
@@ -641,12 +641,15 @@ showGreyTetro();
 
 }
 
+function dropDown(){
+
+}
+
 function checkUserInputDown(event){
   if(isEnabled) return;
-  // console.log(window.pageYOffset)
-  const keyName = event.key;
-  const eventType = event.type;
 
+  const keyName = event.code;
+  const eventType = event.type;
   switch (keyName) {
     case 'ArrowLeft':
      moveToLeft(keyName);
@@ -660,6 +663,9 @@ function checkUserInputDown(event){
     case 'ArrowDown':
       changeSpeed(eventType);
       break;
+    case 'Space':
+      dropDown(keyName);
+      break;  
   }
   
   event.preventDefault(); 
@@ -670,7 +676,7 @@ function checkUserInputDown(event){
 
 function checkUserInputUp(event){
 
-  const keyName = event.key;
+  const keyName = event.code;
   const eventType = event.type;
   speed = speedInfo.base;
   switch(keyName){
@@ -1008,7 +1014,6 @@ function checkGameOver(){
 }
 
 function startGame(event){
-  console.log('start')
     gameStartBtn.disabled = true;
     tetrisGameContainer.classList.add('tetris-game-container-active');
     drawEmptyTetrisTable();
@@ -1041,7 +1046,7 @@ document.addEventListener('keyup', checkUserInputUp);
 gameStartBtn.addEventListener('click', startGame);
 gamePauseBtn.addEventListener('click', pauseGame);
 
-window.addEventListener('touchstart', function (event) {
+tetrisGameContainer.addEventListener('touchstart', function (event) {
   console.log(event)
   touchstartX = event.changedTouches[0].screenX;
   touchstartY = event.changedTouches[0].screenY;
@@ -1071,14 +1076,9 @@ function handleGesture() {
       moveToRight(keyName);
   }
 
-  if (touchendY < touchstartY) {
-      console.log('Swiped Up');
-      
-  }
-
   if (touchendY > touchstartY) {
       console.log('Swiped Down');
-      
+     dropDown();
   }
 
   if (touchendY === touchstartY) {
