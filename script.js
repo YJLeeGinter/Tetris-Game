@@ -17,14 +17,10 @@ let tetrisStart = 1;
 
 let timerID;
 
-let shapeFirstPosArr;
-
 const speedInfo = {
   base: 500,
   fast: 50
 };
-
-// let greyTetroInfoArr = [];
 
 let speed = speedInfo.base;
 let deleteRow = false;
@@ -61,52 +57,24 @@ class Tetromino {
      // 배열을 돌리고 나서 어긋나는 부분 (offset)을 수정하는 함수
       rotate(shape){ 
       const copiedShapeArr = JSON.parse(JSON.stringify(shape));
-
       const size = copiedShapeArr.length;
-      // console.log('copied arr check', copiedShapeArr);
+
       this.rotatedShape= Array.from({length : size}, () => Array(size).fill(0));
-      //console.log(this.tempRotatedShape)
     
         for(let i =0; i < size; i++){
           for(let j =0; j < size; j++){
             if(copiedShapeArr[i][j]){
               this.rotatedShape[j][size-1-i] = copiedShapeArr[i][j];
-            }
-           
+             }
             }
           }
             return this.rotatedShape;
           }
-      
+
     deleteRotatedShape() {
       this.rotatedShape.length = 0;
     }
    
-
-    tempRotate(tempShape){
-      // 이것은 행과 열을 바꾸는 방법
-      // 정사각형이 아닐때도 사용할 수 있다.
-
-            const copiedShapeArr = JSON.parse(JSON.stringify(tempShape));
-            const rowSize = tempShape.length;
-            const colSize = tempShape[0].length;
-            console.log('copied shape arr', copiedShapeArr);
-           if(this.tempRotatedShape.length != 0) this.tempRotatedShape.length = 0;
-      
-           // if(rowSize === colSize) return this.rotatedShape = shape;
-            
-            // 열을 돌면서 행을 만들자
-            
-            for(let i = 0; i < colSize; i++){
-              this.tempRotatedShape.push([]);
-              for(let j = rowSize - 1; j>=0 ; j--){
-                this.tempRotatedShape[i].push(copiedShapeArr[j][i]);
-              }
-            }
-
-      return this.tempRotatedShape;
-    }
-
 }
 
 const T_Tetromino = new Tetromino(
@@ -120,7 +88,6 @@ const T_Tetromino = new Tetromino(
  
 );
 
-
 const I_Tetromino = new Tetromino(
   "I",
   [ 
@@ -132,7 +99,6 @@ const I_Tetromino = new Tetromino(
   "cyan",
  
 );
-
 
 const L_Tetromino = new Tetromino(
   'L',
@@ -189,25 +155,18 @@ const Z_Tetromino = new Tetromino(
 );  
 
 function drawEmptyTetrisTable(){
-  for (let i = 0; i < rows; i++) { // Create 20 rows
-    
+  for (let i = 0; i < rows; i++) {  
     let row = document.createElement("tr");
-  
-      for (let j = 0; j < cols; j++) { // Each row has 10 columns
+      for (let j = 0; j < cols; j++) { 
         let cell = document.createElement("td");
         row.appendChild(cell);
-      }
-  
-    tetrisTable.appendChild(row);
-  
+      } 
+    tetrisTable.appendChild(row); 
   }
-
 }
 
 function getRandomTetromino() {
-
-  const randomKey = Math.floor(Math.random() * tetroArr.length); // Pick a random key
-
+  const randomKey = Math.floor(Math.random() * tetroArr.length); 
     return tetroArr[randomKey];
 }
 
@@ -251,7 +210,7 @@ function drawTetromino (nextTetro){
     }
    }
 
-   while(tetriminoTable.rows[0].cells.length != 4){
+   while(tetriminoTable.rows[0].cells.length != 5){
     
     if(tetriminoTable.rows[0].cells.length % 2 != 0){
       for(let i = 0; i < 4; i++){
@@ -295,7 +254,6 @@ function showGreyTetro(){
   
   const curTetroTableData = findCurrentStat(tetrisTableDataArr, {currentStatus : 1});
   const greyFristRow = curTetroTableData[curTetroTableData.length - 1].rowIndex + 1;
-  // console.log(curTetroTableData)
  // 테트로에서 겹치는 부분을 제거하고 비교하자. 즉 칼럼 인덱스가 같으면 행이 큰 것만 추린다.
 
   const curTetroColIndexArr = [];
@@ -372,8 +330,6 @@ const greyRowArr = [];
     }
   
    }
-  
-  // console.log('temp current tetro array', tempArr)
    tempArr.reverse();
 
 // 안 겹치는 테트로 배열이 내려갈 수 있는가 없는가를 확인한다.
@@ -384,15 +340,13 @@ const greyRowArr = [];
  while(startFlag){
 
   for(let j = 0; j < tempArr.length; j++){
-   // console.log(tempArr[j])
+
     let nextRowIndex = tempArr[j].rowIndex + startPos;
-  // console.log('Tetris table next Row Index', nextRowIndex); 
   if(nextRowIndex === 20){
     startFlag = 0;
    
     // 이걸 기준으로 차이점을 구해서 현재 테트로 배열에 적용한다. 
      rowDifference = nextRowIndex - tempArr[j].rowIndex;
-    // console.log('difference', rowDifference)
     break;
   }
   let colIndex = tempArr[j].colIndex;
@@ -403,7 +357,6 @@ const greyRowArr = [];
    
     // 이걸 기준으로 차이점을 구해서 현재 테트로 배열에 적용한다. 
      rowDifference = nextRowIndex - tempArr[j].rowIndex;
-    // console.log('difference', rowDifference)
     break;
   }
 }
@@ -575,13 +528,9 @@ function isNextRightEmpty(currentTetrominoArr){
 
 function moveToRight(keyName) {
 
- // console.log(keyName)
-
   const currentTetrominoArr = findCurrentStat(tetrisTableDataArr, {currentStatus : 1});
   const activeTetromino = findActiveTetro();
  
-  //console.log('currentTetrominoArr',currentTetrominoArr)
-  //console.log('activeDataSet', activeDataSet)
 // 행과 열을 바꿔서 확인. 
 // 열에 데이터가 하나만 있을때
 // 열에 데이터가 다 있을때
@@ -658,7 +607,6 @@ function rotateTetro(){
   }else{
     // 첫 순환
     rotatedShape = activeTetro.rotate(activeTetro.shape);
-   // console.log('rotated first time', rotatedShape)
   }
   
   activeTetro.size = rotatedShape;
@@ -673,11 +621,7 @@ function rotateTetro(){
 
   for(let i = 0; i < size; i++){
     for(let j = 0; j < size; j++ ){
-      // 열의 위치로 테트로가 돌아갈 수 있는지 없는지를 파악한다.
-       if(j+firstColPos < 0){
-       //  return;
-       }
-      
+     
       if(rotatedShape[i][j]){
         tetrisTableDataArr[i+firstRowPos][j+firstColPos] = { data : 1, 
                   color:activeTetro.color , currentStatus: 1,
@@ -687,11 +631,9 @@ function rotateTetro(){
                     }; // 화면에 표현하기 전에 데이터 먼저
 
          }
-    //  console.log(tetrisTableDataArr)
     }
   }
   
-//deleteGreyTetro();
 deleteTetrisTable();
 drawEmptyTetrisTable();
 
@@ -797,8 +739,7 @@ currentTetrominoArr.forEach(item => {
 })
 
   const colIndexArr = [...new Set(curTetroColIndexArr)];
- // console.log(colIndexArr);
-//  const checkLength = currentTetrominoArr.length - colIndexArr.length;
+ 
  const tempArr = []; // 안 겹치는 것만 모아둔 배열
 
  for(let i = currentTetrominoArr.length-1; i >= 0; i-- ){
@@ -995,7 +936,6 @@ function checkTetrisTableRows(){
   for(let i =0; i < rows; i++){
     let counter = 0;
     for(let j = 0; j < cols; j++){
-      // && tetrisTableDataArr[i][j].color != 'grey' 
       if(tetrisTableDataArr[i][j] != 0 ) counter++;
     }
     if(counter === cols) fullRowIndex.push(i);

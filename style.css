@@ -14,10 +14,9 @@ td {
   text-align: center;
 }
 
-h1{
+h2{
   margin-top: 1rem;
   text-align: center;
-  color:palevioletred;
 }
 
 .tetris-game-container{
@@ -79,7 +78,14 @@ h1{
 }
 
 .start-btn:hover{
-  cursor: pointer;
-  background-color: #4CAF50; /* Green */
-  color: white;
+ cursor: pointer;
+ 
+}
+
+.start-btn:disabled{
+ cursor: auto;
+} 
+
+.intro-container{
+  margin-top: 1rem;
 }
