@@ -39,7 +39,6 @@ class Tetromino {
       this._size;
       this.active = 0;
       this.rotatedShape = []; // 빈 배열을 truty value. truty or false value 차이점이 버그를 발생시킬 수 있다.
-      this.tempRotatedShape = [];
     } 
 
     // 각 테트로 크기 구하기
@@ -992,7 +991,7 @@ function checkGameOver(){
   
   if(count === rows){
   alert('Game Over');
-  tetrisGameContainer.style.display = "none";
+  tetrisGameContainer.classList.remove('tetris-game-container-active');
   nextTetrominoArr.pop();
   deactivateTetro();
 
@@ -1001,14 +1000,15 @@ function checkGameOver(){
   tetrisTableDataArr.forEach(eachRow => eachRow.fill(0));
   deleteTetrisTable();
   deleteTetrominoTable();
-  console.log(tetrisTableDataArr);
+  console.log('game over!', tetrisTableDataArr);
   return true;
   }
+  
   return false;
 }
 
 function startGame(event){
-
+  console.log('start')
     gameStartBtn.disabled = true;
     tetrisGameContainer.classList.add('tetris-game-container-active');
     drawEmptyTetrisTable();
@@ -1041,7 +1041,7 @@ document.addEventListener('keyup', checkUserInputUp);
 gameStartBtn.addEventListener('click', startGame);
 gamePauseBtn.addEventListener('click', pauseGame);
 
-tetrisGameContainer.addEventListener('touchstart', function (event) {
+window.addEventListener('touchstart', function (event) {
   console.log(event)
   touchstartX = event.changedTouches[0].screenX;
   touchstartY = event.changedTouches[0].screenY;
