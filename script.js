@@ -650,7 +650,7 @@ showGreyTetro();
 }
 
 function dropDown(keyName){
-
+  console.log(keyName)
   const currentTetrominoArr = findCurrentStat(tetrisTableDataArr, {currentStatus : 1});
   deleteTetrisTable();
 
@@ -717,16 +717,12 @@ function checkUserInputUp(event){
     case 'ArrowUp':
       break;
     case 'Space':
-      check();
       break;
 
   }
 
 }
 
-function check(){
-
-}
 
 function deleteTetrisTable(){
   tetrisTable.innerHTML = '';
@@ -1087,6 +1083,7 @@ tetrisGameContainer.addEventListener('touchstart', function (event) {
 }, false);
 
 tetrisGameContainer.addEventListener('touchend', function (event) {
+  console.log(event)
   touchendX = event.changedTouches[0].screenX;
   touchendY = event.changedTouches[0].screenY;
   event.preventDefault(); 
@@ -1096,6 +1093,13 @@ tetrisGameContainer.addEventListener('touchend', function (event) {
 
 
 function handleGesture() {
+  
+  if (touchendY > touchstartY) {
+    console.log('Swiped Down');
+   dropDown();
+}
+
+
   if (touchendX < touchstartX) {
       console.log('Swiped Left');
       let keyName = 'Swiped Left';
@@ -1106,11 +1110,6 @@ function handleGesture() {
       console.log('Swiped Right');
       let keyName = 'Swiped Right';
       moveToRight(keyName);
-  }
-
-  if (touchendY > touchstartY) {
-      console.log('Swiped Down');
-     dropDown();
   }
 
   if (touchendY === touchstartY) {
