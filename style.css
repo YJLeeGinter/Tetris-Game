@@ -33,6 +33,10 @@ h2{
   font-size: 12px;
 }
 
+.next-tetro-title{
+  margin-top: 0;
+}
+
 
 @media screen and (min-width: 650px) {
   .tetris-game-container-active {
@@ -50,11 +54,21 @@ h2{
     flex-direction: column;
     align-items: flex-end; /* Aligns the stacked items to the right */
   }
+
+  .tetris-table-container{
+    align-self: flex-start;
+  }
   
   #tetris{
     grid-column: 2; 
     text-align: center;
     height: auto;
+  }
+
+  td {
+    width: 1.5rem;
+    height: 1.5rem;
+    
   }
 
 }

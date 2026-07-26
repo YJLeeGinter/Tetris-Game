@@ -27,6 +27,8 @@ let deleteRow = false;
 
 let isEnabled = false;
 
+const ghostTetroPosArr = [];
+
 class Tetromino {
     constructor(name, shape, color) {
       this.name = name;  
@@ -39,7 +41,6 @@ class Tetromino {
       this._size;
       this.active = 0;
       this.rotatedShape = []; // 빈 배열을 truty value. truty or false value 차이점이 버그를 발생시킬 수 있다.
-      this.greyPosArr = [];
     } 
 
     // 각 테트로 크기 구하기
@@ -250,6 +251,8 @@ function compare(a, b) {
   if (a < b) return -1; //  첫 번째 값이 두 번째 값보다 작은 경우
 }
 
+// 유령 테트로는 이벤트가 발생할 때 까지 그 자리를 유지한다. 
+
 function showGreyTetro(){
   
   const curTetroTableData = findCurrentStat(tetrisTableDataArr, {currentStatus : 1});
@@ -291,6 +294,8 @@ function showGreyTetro(){
       }
     }
   }
+
+  if(ghostTetroPosArr.length != 0) ghostTetroPosArr.length = 0; 
 
   if(toBeCheckedArr){
     
@@ -370,10 +375,13 @@ const greyRowArr = [];
  })
 
  
+ 
   for(let i = 0; i < copiedCurTetroData.length; i++){
     let rowIndex = copiedCurTetroData[i].rowIndex;
     let colIndex = copiedCurTetroData[i].colIndex;
-   
+
+    ghostTetroPosArr.push({rowIndex: rowIndex, colIndex: colIndex});
+
     tetrisTable.rows[rowIndex].cells[colIndex].style.backgroundColor ='grey';
 
   }
@@ -404,7 +412,8 @@ const greyRowArr = [];
       break;
     }
   }
-  
+
+  ghostTetroPosArr.push({rowIndex: rowIndex, colIndex: colIndex});
   tetrisTable.rows[rowIndex].cells[colIndex].style.backgroundColor ='grey';
 
 }
@@ -529,7 +538,6 @@ function isNextRightEmpty(currentTetrominoArr){
 function moveToRight(keyName) {
 
   const currentTetrominoArr = findCurrentStat(tetrisTableDataArr, {currentStatus : 1});
-  const activeTetromino = findActiveTetro();
  
 // 행과 열을 바꿔서 확인. 
 // 열에 데이터가 하나만 있을때
@@ -555,7 +563,7 @@ function moveToRight(keyName) {
 
   showGreyTetro();
 
-  checkUserInputUp(keyName)
+  checkUserInputUp(keyName);
   }
 }
 
@@ -641,7 +649,26 @@ showGreyTetro();
 
 }
 
-function dropDown(){
+function dropDown(keyName){
+
+  const currentTetrominoArr = findCurrentStat(tetrisTableDataArr, {currentStatus : 1});
+  deleteTetrisTable();
+
+  for(let i = 0; i < ghostTetroPosArr.length; i++){
+    tetrisTableDataArr[currentTetrominoArr[i].rowIndex][currentTetrominoArr[i].colIndex] = 0;
+
+    currentTetrominoArr[i].rowIndex = ghostTetroPosArr[i].rowIndex;
+    currentTetrominoArr[i].colIndex = ghostTetroPosArr[i].colIndex;
+    
+    tetrisTableDataArr[ghostTetroPosArr[i].rowIndex][ghostTetroPosArr[i].colIndex] = currentTetrominoArr[i];
+    
+  }
+
+  console.log('ghost', tetrisTableDataArr)
+
+  drawEmptyTetrisTable();
+  drawTetrisTable();
+
 
 }
 
@@ -688,11 +715,16 @@ function checkUserInputUp(event){
     case 'ArrowRight':
       break;
     case 'ArrowUp':
-      break;  
-    default:
+      break;
+    case 'Space':
+      check();
+      break;
 
-    break; 
   }
+
+}
+
+function check(){
 
 }
 
@@ -739,7 +771,7 @@ function isNextMoveEmpty(currentTetrominoArr){
  
  const curTetroColIndexArr = [];
 
-currentTetrominoArr.forEach(item => {
+  currentTetrominoArr.forEach(item => {
   curTetroColIndexArr.push(item.colIndex);
 })
 
@@ -808,15 +840,15 @@ function moveTetromino(){
     // 겹치는 부분이 0이 되어서 사라져버린다. 순서대로 하면
     
      }
-     
-   
+       
      showGreyTetro();
      drawTetrisTable();
      checkGameOver();
 
      timerID =  setTimeout(moveTetromino, speed)
    }else{ // 내려가지 못할 때는 부딪힌다. 여기에서 충돌 여부 확인
-    if(checkGameOver()){
+    let gameOverFlag = checkGameOver();
+    if(gameOverFlag){
       return;
     }
 
@@ -1014,6 +1046,7 @@ function checkGameOver(){
 }
 
 function startGame(event){
+    event.preventDefault(); 
     gameStartBtn.disabled = true;
     tetrisGameContainer.classList.add('tetris-game-container-active');
     drawEmptyTetrisTable();
@@ -1025,9 +1058,8 @@ function startGame(event){
     drawFirstCurrentTetro(firstTetro);
 
     speed = speedInfo.base;
+    
     timerID = setTimeout(moveTetromino, speed);
-    event.preventDefault(); 
-
 }
 
 function pauseGame(){
