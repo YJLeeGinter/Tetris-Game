@@ -13,7 +13,6 @@ const rows = 20, cols = 10;
 const tetrisTableDataArr = Array.from({ length: rows }, () => Array(cols).fill(0));
 
 let tetrisRowEndPos = tetrisTableDataArr.length;
-let tetrisStart = 1;
 
 let timerID;
 
@@ -1074,47 +1073,66 @@ document.addEventListener('keyup', checkUserInputUp);
 gameStartBtn.addEventListener('click', startGame);
 gamePauseBtn.addEventListener('click', pauseGame);
 
+let touchstartX;
+let touchstartY;
+let touchendX;
+let touchendY;
+
 tetrisGameContainer.addEventListener('touchstart', function (event) {
-  console.log(event)
-  touchstartX = event.changedTouches[0].screenX;
-  touchstartY = event.changedTouches[0].screenY;
+  // console.log(event)
+   touchstartX = event.changedTouches[0].clientX;
+   touchstartY = event.changedTouches[0].clientY;
   event.preventDefault(); 
 
 }, false);
 
 tetrisGameContainer.addEventListener('touchend', function (event) {
-  console.log(event)
-  touchendX = event.changedTouches[0].screenX;
-  touchendY = event.changedTouches[0].screenY;
+   touchendX = event.changedTouches[0].clientX;
+   touchendY = event.changedTouches[0].clientY;
   event.preventDefault(); 
 
   handleGesture();
 }, false);
 
+tetrisGameContainer.addEventListener('touchmove', function (event) {
+  const touch = event.touches[0];
+  let x = touch.clientX;
+  let y = touch.clientY;
+
+  // 왼쪽 : x좌표 감소(음수), 오른쪽: x좌표 증가(양수), 빨리 내려가기: y좌표 증가(양수)
+
+  if (touchstartX < x) {
+    console.log('Swiped Right');
+    let keyName = 'Swiped Right'
+    moveToRight(keyName);
+  }
+
+  if(touchstartX > x){
+    console.log('Swiped Left');
+    let keyName = 'Swiped Left';
+    moveToLeft(keyName);
+  }
+
+  if(touchstartY < y){
+    console.log('KeyDown')
+    let keyName = 'KeyDown';
+    changeSpeed(keyName);
+  }
+}, false);
+
 
 function handleGesture() {
+
+  if (touchendY === touchstartY) {
+    console.log('Tap');
+    let keyName = 'Tap'
+    rotateTetro(keyName);
+  }
   
   if (touchendY > touchstartY) {
     console.log('Swiped Down');
    dropDown();
-}
-
-
-  if (touchendX < touchstartX) {
-      console.log('Swiped Left');
-      let keyName = 'Swiped Left';
-      moveToLeft(keyName);
   }
 
-  if (touchendX > touchstartX) {
-      console.log('Swiped Right');
-      let keyName = 'Swiped Right';
-      moveToRight(keyName);
-  }
-
-  if (touchendY === touchstartY) {
-      console.log('Tap');
-      let keyName = 'Tap'
-      rotateTetro(keyName);
-  }
+  
 }
