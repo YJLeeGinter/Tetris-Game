@@ -84,8 +84,7 @@ const T_Tetromino = new Tetromino(
     [1,1,1],
     [0,0,0],
   ],
-  "purple",
- 
+  "purple", 
 );
 
 const I_Tetromino = new Tetromino(
@@ -97,7 +96,6 @@ const I_Tetromino = new Tetromino(
     [0,1,0,0]  
   ],
   "cyan",
- 
 );
 
 const L_Tetromino = new Tetromino(
@@ -108,7 +106,6 @@ const L_Tetromino = new Tetromino(
     [0,0,0],
   ],
   "orange",
-  
 );
 
 const O_Tetromino = new Tetromino(
@@ -118,7 +115,6 @@ const O_Tetromino = new Tetromino(
     [1,1],   
   ],
   "yellow",
- 
 );
 
 const J_Tetromino = new Tetromino(
@@ -128,8 +124,7 @@ const J_Tetromino = new Tetromino(
     [1,1,1],
     [0,0,0]
   ],
-  "blue",
-  
+  "blue", 
 ); 
 
 const S_Tetromino = new Tetromino(
@@ -140,7 +135,6 @@ const S_Tetromino = new Tetromino(
     [0,0,0]
   ],
   "green",
-  
 );
 
 const Z_Tetromino = new Tetromino(
@@ -151,7 +145,6 @@ const Z_Tetromino = new Tetromino(
     [0,0,0]
   ],
   "red",
- 
 );  
 
 function drawEmptyTetrisTable(){
@@ -663,11 +656,8 @@ function dropDown(keyName){
     
   }
 
-  console.log('ghost', tetrisTableDataArr)
-
   drawEmptyTetrisTable();
   drawTetrisTable();
-
 
 }
 
@@ -1073,18 +1063,18 @@ document.addEventListener('keyup', checkUserInputUp);
 gameStartBtn.addEventListener('click', startGame);
 gamePauseBtn.addEventListener('click', pauseGame);
 
-let touchstartX;
-let touchstartY;
+let touchStartX = 0;
+let touchStartY = 0;
 let touchendX;
 let touchendY;
 
 tetrisGameContainer.addEventListener('touchstart', function (event) {
-  // console.log(event)
-   touchstartX = event.changedTouches[0].clientX;
-   touchstartY = event.changedTouches[0].clientY;
+   console.log('touchstart event', event)
+   touchStartX = event.changedTouches[0].clientX;
+   touchStartY = event.changedTouches[0].clientY;
   event.preventDefault(); 
 
-}, false);
+}, { passive: false });
 
 tetrisGameContainer.addEventListener('touchend', function (event) {
    touchendX = event.changedTouches[0].clientX;
@@ -1095,30 +1085,38 @@ tetrisGameContainer.addEventListener('touchend', function (event) {
 }, false);
 
 tetrisGameContainer.addEventListener('touchmove', function (event) {
-  const touch = event.touches[0];
-  let x = touch.clientX;
-  let y = touch.clientY;
+  event.preventDefault(); 
 
-  // 왼쪽 : x좌표 감소(음수), 오른쪽: x좌표 증가(양수), 빨리 내려가기: y좌표 증가(양수)
+  if (!touchStartX || !touchStartY) return;
 
-  if (touchstartX < x) {
-    console.log('Swiped Right');
-    let keyName = 'Swiped Right'
-    moveToRight(keyName);
+  // Get the current finger position
+  const touchMoveX = event.touches[0].clientX;
+  const touchMoveY = event.touches[0].clientY;
+  console.log(touchMoveX)
+  // Calculate the distance moved
+  const diffX = touchStartX - touchMoveX;
+  const diffY = touchStartY - touchMoveY;
+
+  // Ensure the gesture is primarily horizontal, not vertical
+  if (Math.abs(diffX) > Math.abs(diffY)) {
+      // Prevent default scrolling behavior if moving horizontally
+      if (event.cancelable) event.preventDefault();
+
+      if (diffX > 0) {
+        let keyName = 'ArrowLeft';
+        moveToLeft(keyName);
+          console.log('Swiping / Dragging Left');
+          // Add your left-movement logic here
+      } else {
+        let keyName = 'ArrowRight';
+        moveToRight(keyName);
+          console.log('Swiping / Dragging Right');
+          // Add your right-movement logic here
+      }
   }
 
-  if(touchstartX > x){
-    console.log('Swiped Left');
-    let keyName = 'Swiped Left';
-    moveToLeft(keyName);
-  }
-
-  if(touchstartY < y){
-    console.log('KeyDown')
-    let keyName = 'KeyDown';
-    changeSpeed(keyName);
-  }
-}, false);
+  
+}, { passive: false });
 
 
 function handleGesture() {
@@ -1133,6 +1131,7 @@ function handleGesture() {
     console.log('Swiped Down');
    dropDown();
   }
-
+  touchStartX = 0;
+  touchStartY = 0;
   
 }
