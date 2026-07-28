@@ -1065,8 +1065,8 @@ gamePauseBtn.addEventListener('click', pauseGame);
 
 let touchStartX = 0;
 let touchStartY = 0;
-let touchendX;
-let touchendY;
+let touchendX = 0;
+let touchendY = 0;
 
 tetrisGameContainer.addEventListener('touchstart', function (event) {
    console.log('touchstart event', event)
@@ -1121,17 +1121,18 @@ tetrisGameContainer.addEventListener('touchmove', function (event) {
 
 function handleGesture() {
 
-  if (touchendY === touchstartY) {
+  if (touchendY === touchStartY) {
     console.log('Tap');
     let keyName = 'Tap'
     rotateTetro(keyName);
   }
   
-  if (touchendY > touchstartY) {
+  if (touchendY > touchStartY) {
     console.log('Swiped Down');
    dropDown();
   }
-  touchStartX = 0;
-  touchStartY = 0;
+  // touchStartX = 0;
+  // touchStartY = 0;
   
 }
+
