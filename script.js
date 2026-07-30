@@ -1063,76 +1063,55 @@ document.addEventListener('keyup', checkUserInputUp);
 gameStartBtn.addEventListener('click', startGame);
 gamePauseBtn.addEventListener('click', pauseGame);
 
-let touchStartX = 0;
-let touchStartY = 0;
-let touchendX = 0;
-let touchendY = 0;
 
-tetrisGameContainer.addEventListener('touchstart', function (event) {
-   console.log('touchstart event', event)
-   touchStartX = event.changedTouches[0].clientX;
-   touchStartY = event.changedTouches[0].clientY;
-  event.preventDefault(); 
-
-}, { passive: false });
-
-tetrisGameContainer.addEventListener('touchend', function (event) {
-   touchendX = event.changedTouches[0].clientX;
-   touchendY = event.changedTouches[0].clientY;
-  event.preventDefault(); 
-
-  handleGesture();
-}, false);
-
-tetrisGameContainer.addEventListener('touchmove', function (event) {
-  event.preventDefault(); 
-
-  if (!touchStartX || !touchStartY) return;
-
-  // Get the current finger position
-  const touchMoveX = event.touches[0].clientX;
-  const touchMoveY = event.touches[0].clientY;
-  console.log(touchMoveX)
-  // Calculate the distance moved
-  const diffX = touchStartX - touchMoveX;
-  const diffY = touchStartY - touchMoveY;
-
-  // Ensure the gesture is primarily horizontal, not vertical
-  if (Math.abs(diffX) > Math.abs(diffY)) {
-      // Prevent default scrolling behavior if moving horizontally
-      if (event.cancelable) event.preventDefault();
-
-      if (diffX > 0) {
-        let keyName = 'ArrowLeft';
-        moveToLeft(keyName);
-          console.log('Swiping / Dragging Left');
-          // Add your left-movement logic here
-      } else {
-        let keyName = 'ArrowRight';
-        moveToRight(keyName);
-          console.log('Swiping / Dragging Right');
-          // Add your right-movement logic here
-      }
-  }
-
-  
-}, { passive: false });
+let clientXStart = 0;
+let clientYStart = 0;
 
 
-function handleGesture() {
+tetrisGameContainer.addEventListener('pointerdown', (event)=>{
+  console.log('check pointer down', event);
+  clientXStart = event.clientX;
+  clientYStart = event.clientY;
+});
 
-  if (touchendY === touchStartY) {
-    console.log('Tap');
-    let keyName = 'Tap'
-    rotateTetro(keyName);
+tetrisGameContainer.addEventListener('pointerup', (event)=>{
+ let clientXend = event.clientX;
+ let clientYend = event.clientY;
+
+  if(clientXStart === clientXend && clientYStart === clientYend){
+    rotateTetro();
   }
   
-  if (touchendY > touchStartY) {
-    console.log('Swiped Down');
-   dropDown();
-  }
-  // touchStartX = 0;
-  // touchStartY = 0;
+});
+
+tetrisGameContainer.addEventListener('pointermove', (event)=>{
+  console.log('check pointer move', event);
+  let clientX = event.clientX;
+  let clientY = event.clientY;
+
+  let xDifference = clientX - clientXStart;
+  let yDifference = clientY - clientYStart;
+  // x좌표에서 왼쪽으로 가면 음수, 오른쪽으로 가면 양수
+  // y좌표는 양수 변경만 허용
+  // 왼쪽으로 가면서 밑으로 내려가는 동시 움직임은 허용하지 않는다. 
   
-}
+  if(xDifference > 0){
+    let keyName = 'ArrowRight';
+    moveToRight(keyName);
+    return;
+  }
+  
+  if(xDifference < 0){
+    let keyName = 'ArrowLeft';
+    moveToLeft(keyName);
+    return;
+  }
+
+  if(yDifference > 0){
+    let keyName = 'Space';
+    dropDown(keyName);
+    return;
+  }
+
+});
 
