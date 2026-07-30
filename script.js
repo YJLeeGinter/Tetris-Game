@@ -712,7 +712,6 @@ function checkUserInputUp(event){
 
 }
 
-
 function deleteTetrisTable(){
   tetrisTable.innerHTML = '';
 }
@@ -735,7 +734,7 @@ function isNextMoveEmpty(currentTetrominoArr){
       
    let nextMove = true;
  
-   // 끝이 경우 마지막 한 행만 확인한다.
+   // 끝인 경우 마지막 한 행만 확인한다.
  for(let i = currentTetrominoArr.length-1; i >= 0; i-- ){
    if(currentTetrominoArr[i].rowIndex >=  tetrisTableDataArr.length -1){
      nextMove = false; 
@@ -1063,13 +1062,13 @@ document.addEventListener('keyup', checkUserInputUp);
 gameStartBtn.addEventListener('click', startGame);
 gamePauseBtn.addEventListener('click', pauseGame);
 
-
 let clientXStart = 0;
 let clientYStart = 0;
-
+let DAS  = 150;
+let ARR = 40;
 
 tetrisGameContainer.addEventListener('pointerdown', (event)=>{
-  console.log('check pointer down', event);
+ // console.log('check pointer down', event);
   clientXStart = event.clientX;
   clientYStart = event.clientY;
 });
@@ -1084,6 +1083,10 @@ tetrisGameContainer.addEventListener('pointerup', (event)=>{
   
 });
 
+//DAS(Delayed auto shift), ARR(Auto repeat rate);
+// 우선 한칸 움직인다. -> 150 ms을 기다린다(DAS) -> 그리고 인풋이 그대로 있으면 30ms마다 테트로를 움직인다.(ARR)
+// DAS = 150ms , ASS = 40ms
+
 tetrisGameContainer.addEventListener('pointermove', (event)=>{
   console.log('check pointer move', event);
   let clientX = event.clientX;
@@ -1094,10 +1097,13 @@ tetrisGameContainer.addEventListener('pointermove', (event)=>{
   // x좌표에서 왼쪽으로 가면 음수, 오른쪽으로 가면 양수
   // y좌표는 양수 변경만 허용
   // 왼쪽으로 가면서 밑으로 내려가는 동시 움직임은 허용하지 않는다. 
-  
+
   if(xDifference > 0){
     let keyName = 'ArrowRight';
     moveToRight(keyName);
+    delay(DAS).then(()=>{
+      moveToRight(keyName);
+    });
     return;
   }
   
