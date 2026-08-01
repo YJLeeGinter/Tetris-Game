@@ -1073,7 +1073,10 @@ gamePauseBtn.addEventListener('click', pauseGame);
 let startX = 0;
 let startY = 0;
 
-const threshold = 30;
+const thresholdX = 30;
+const thresholdY = 35;
+
+let xFlag= false;
 
 tetrisGameContainer.onpointerdown = function(event) {
   event.preventDefault();
@@ -1091,17 +1094,21 @@ tetrisGameContainer.onpointerdown = function(event) {
    tetrisGameContainer.onpointermove = function(event) {
 
     let xDifference = event.clientX - startX;
-
-    if (xDifference > threshold) {
+    console.log('pointerUP')
+    if (xDifference > thresholdX) {
       let keyName = 'ArrowRight';
       moveToRight(keyName);
       startX = event.clientX;   // Reset for repeated movement
-    } else if (xDifference < -threshold) {
+      xFlag = true;
+
+    } else if (xDifference < -thresholdX) {
       let keyName = 'ArrowLeft';
       moveToLeft(keyName);
       startX = event.clientX;   // Reset for repeated movement
+      xFlag = true;
 
     }
+    console.log(xFlag)
   };
 
   // on pointer up finish tracking pointer moves
@@ -1109,7 +1116,7 @@ tetrisGameContainer.onpointerdown = function(event) {
   
     let yDifference = event.clientY - startY;
 
-   if(yDifference > threshold){
+   if(!xFlag && yDifference > thresholdY){
     let keyName = 'Space';
       dropDown(keyName);
       startY = event.clientY;
@@ -1118,7 +1125,7 @@ tetrisGameContainer.onpointerdown = function(event) {
    if(yDifference === 0){
     rotateTetro();
    } 
-
+   xFlag = false; 
     tetrisGameContainer.onpointermove = null;
     tetrisGameContainer.onpointerup = null;
     // ...also process the "drag end" if needed
