@@ -663,6 +663,7 @@ function dropDown(keyName){
 
 function checkUserInputDown(event){
   if(isEnabled) return;
+  event.stopImmediatePropagation(); 
 
   const keyName = event.code;
   const eventType = event.type;
@@ -1062,62 +1063,67 @@ document.addEventListener('keyup', checkUserInputUp);
 gameStartBtn.addEventListener('click', startGame);
 gamePauseBtn.addEventListener('click', pauseGame);
 
-let clientXStart = 0;
-let clientYStart = 0;
-let DAS  = 150;
-let ARR = 40;
+let startX = 0;
+let startY = 0;
 
-tetrisGameContainer.addEventListener('pointerdown', (event)=>{
- // console.log('check pointer down', event);
-  clientXStart = event.clientX;
-  clientYStart = event.clientY;
-});
+const DAS  = 150;
+const ARR = 40;
 
-tetrisGameContainer.addEventListener('pointerup', (event)=>{
- let clientXend = event.clientX;
- let clientYend = event.clientY;
+const MOVE_THRESHOLD = 30;
 
-  if(clientXStart === clientXend && clientYStart === clientYend){
-    rotateTetro();
-  }
+tetrisGameContainer.onpointerdown = function(event) {
+  event.preventDefault();
+
+  // retarget all pointer events (until pointerup) to tetrisGameContainer
+  tetrisGameContainer.setPointerCapture(event.pointerId);
+  console.log(event)
+  startX = event.clientX;
+  startY = event.clientY;
+  let pointerMoveFlag = false;
+  console.log(startX, startY);
   
-});
+  //DAS(Delayed auto shift), ARR(Auto repeat rate);
+  // 모든 움직임에 반응하면 너무 빨리 움직여버린다
+  // 우선 한칸 움직인다. -> 150 ms을 기다린다(DAS) -> 그리고 인풋이 그대로 있으면 30ms마다 테트로를 움직인다.(ARR)
+  // DAS = 150ms , ASS = 40ms
+  // input은 한번만
 
-//DAS(Delayed auto shift), ARR(Auto repeat rate);
-// 우선 한칸 움직인다. -> 150 ms을 기다린다(DAS) -> 그리고 인풋이 그대로 있으면 30ms마다 테트로를 움직인다.(ARR)
-// DAS = 150ms , ASS = 40ms
-
-tetrisGameContainer.addEventListener('pointermove', (event)=>{
-  console.log('check pointer move', event);
-  let clientX = event.clientX;
-  let clientY = event.clientY;
-
-  let xDifference = clientX - clientXStart;
-  let yDifference = clientY - clientYStart;
-  // x좌표에서 왼쪽으로 가면 음수, 오른쪽으로 가면 양수
-  // y좌표는 양수 변경만 허용
-  // 왼쪽으로 가면서 밑으로 내려가는 동시 움직임은 허용하지 않는다. 
-
-  if(xDifference > 0){
+   // start tracking pointer moves
+   tetrisGameContainer.onpointermove = function(event) {
+    // moving the slider: listen on the thumb, as all pointer events are retargeted to it
+    pointerMoveFlag = true;
+    let xDifference = event.clientX - startX;
+    let yDifference = event.clientY - startY;
+  
+  if(xDifference > MOVE_THRESHOLD){
     let keyName = 'ArrowRight';
     moveToRight(keyName);
-    delay(DAS).then(()=>{
-      moveToRight(keyName);
-    });
-    return;
-  }
+
+    startX = event.clientX;
   
-  if(xDifference < 0){
+  }
+
+  if(xDifference < -MOVE_THRESHOLD){
     let keyName = 'ArrowLeft';
     moveToLeft(keyName);
-    return;
-  }
 
-  if(yDifference > 0){
-    let keyName = 'Space';
-    dropDown(keyName);
-    return;
-  }
+    startX = event.clientX;
+  
+  }  
 
-});
+  };
+
+
+
+  // on pointer up finish tracking pointer moves
+  tetrisGameContainer.onpointerup = function(event) {
+    if(!pointerMoveFlag) rotateTetro();
+
+    tetrisGameContainer.onpointermove = null;
+    tetrisGameContainer.onpointerup = null;
+    // ...also process the "drag end" if needed
+
+
+  };
+};
 
