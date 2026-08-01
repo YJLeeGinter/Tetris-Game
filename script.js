@@ -1079,7 +1079,7 @@ tetrisGameContainer.onpointerdown = function(event) {
   console.log(event)
   startX = event.clientX;
   startY = event.clientY;
-  let pointerMoveFlag = false;
+  // let pointerMoveFlag = false;
   console.log(startX, startY);
   
   //DAS(Delayed auto shift), ARR(Auto repeat rate);
@@ -1091,9 +1091,8 @@ tetrisGameContainer.onpointerdown = function(event) {
    // start tracking pointer moves
    tetrisGameContainer.onpointermove = function(event) {
     // moving the slider: listen on the thumb, as all pointer events are retargeted to it
-    pointerMoveFlag = true;
+   // pointerMoveFlag = true;
     let xDifference = event.clientX - startX;
-    let yDifference = event.clientY - startY;
   
   if(xDifference > MOVE_THRESHOLD){
     let keyName = 'ArrowRight';
@@ -1113,11 +1112,18 @@ tetrisGameContainer.onpointerdown = function(event) {
 
   };
 
-
-
   // on pointer up finish tracking pointer moves
   tetrisGameContainer.onpointerup = function(event) {
-    if(!pointerMoveFlag) rotateTetro();
+
+    let yDifference = event.clientY - startY;
+
+    if(yDifference > MOVE_THRESHOLD){
+      let keyName = 'Space';
+      dropDown(keyName);
+      
+    }
+
+    if(yDifference === 0) rotateTetro();
 
     tetrisGameContainer.onpointermove = null;
     tetrisGameContainer.onpointerup = null;
