@@ -16,6 +16,9 @@ let tetrisRowEndPos = tetrisTableDataArr.length;
 
 let timerID;
 
+const lineNumberContainer = document.querySelector(".line-number");
+let lineCounter = 0;
+
 const speedInfo = {
   base: 500,
   fast: 50
@@ -25,7 +28,6 @@ let speed = speedInfo.base;
 let deleteRow = false;
 
 let isEnabled = false;
-let lineCounter = 0;
 
 const ghostTetroPosArr = [];
 
@@ -852,13 +854,17 @@ function moveTetromino(){
     for(let i =0; i < rowCounter; i++){
       for(let j=0; j < cols; j++){
         // 이게 먼저 보여진다.
-        tetrisTableDataArr[result.fullRowIndex[i]][j] = { color: 'pink' };         
+        tetrisTableDataArr[result.fullRowIndex[i]][j] = { color: 'pink' };
       }
-     
+      lineCounter++;         
+
     }
+
     deleteTetrisTable();
     drawEmptyTetrisTable();
     drawTetrisTable();
+
+    lineNumberContainer.textContent = lineCounter;
 
     delay(2000).then(() => {
     for(let i = 0; i < rowCounter; i++){
@@ -1067,8 +1073,7 @@ gamePauseBtn.addEventListener('click', pauseGame);
 let startX = 0;
 let startY = 0;
 
-const MOVE_THRESHOLD = 30;
-let gestureLocked = false;
+const threshold = 30;
 
 tetrisGameContainer.onpointerdown = function(event) {
   event.preventDefault();
@@ -1085,45 +1090,34 @@ tetrisGameContainer.onpointerdown = function(event) {
    // start tracking pointer moves
    tetrisGameContainer.onpointermove = function(event) {
 
-   // if (gestureLocked) return;
-
     let xDifference = event.clientX - startX;
-    let yDifference = event.clientY - startY;
-    
-  if(Math.abs(xDifference) < Math.abs(yDifference)) return;
-  
-  if(xDifference > MOVE_THRESHOLD){
-    let keyName = 'ArrowRight';
-    moveToRight(keyName);
 
-    startX = event.clientX;
+    if (xDifference > threshold) {
+      let keyName = 'ArrowRight';
+      moveToRight(keyName);
+      startX = event.clientX;   // Reset for repeated movement
+    } else if (xDifference < -threshold) {
+      let keyName = 'ArrowLeft';
+      moveToLeft(keyName);
+      startX = event.clientX;   // Reset for repeated movement
 
-  
-  }
-
-  if(xDifference < -MOVE_THRESHOLD){
-    let keyName = 'ArrowLeft';
-    moveToLeft(keyName);
-
-    startX = event.clientX;
-  
-  }  
-   
-
+    }
   };
 
   // on pointer up finish tracking pointer moves
   tetrisGameContainer.onpointerup = function(event) {
-
+  
     let yDifference = event.clientY - startY;
 
-    if(yDifference > MOVE_THRESHOLD){
-      let keyName = 'Space';
+   if(yDifference > threshold){
+    let keyName = 'Space';
       dropDown(keyName);
+      startY = event.clientY;
+   }
 
-    }
-
-    if(yDifference === 0) rotateTetro();
+   if(yDifference === 0){
+    rotateTetro();
+   } 
 
     tetrisGameContainer.onpointermove = null;
     tetrisGameContainer.onpointerup = null;
