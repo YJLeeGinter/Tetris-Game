@@ -25,6 +25,7 @@ let speed = speedInfo.base;
 let deleteRow = false;
 
 let isEnabled = false;
+let lineCounter = 0;
 
 const ghostTetroPosArr = [];
 
@@ -35,7 +36,7 @@ class Tetromino {
       // 정사각형 형태의 배열만 입력하도록 제한한다
       this.color = color;  // Color of the Tetromino
       tetroArr.push(this);
-      this.firstColsStartPos = 3;  // Starting position
+      this.firstColsStartPos = 3;  // Starting positions
       this.firstRowsStartPos = 0;
       this._size;
       this.active = 0;
@@ -1066,39 +1067,37 @@ gamePauseBtn.addEventListener('click', pauseGame);
 let startX = 0;
 let startY = 0;
 
-const DAS  = 150;
-const ARR = 40;
-
 const MOVE_THRESHOLD = 30;
+let gestureLocked = false;
 
 tetrisGameContainer.onpointerdown = function(event) {
   event.preventDefault();
 
   // retarget all pointer events (until pointerup) to tetrisGameContainer
   tetrisGameContainer.setPointerCapture(event.pointerId);
-  console.log(event)
+
   startX = event.clientX;
   startY = event.clientY;
-  // let pointerMoveFlag = false;
-  console.log(startX, startY);
   
-  //DAS(Delayed auto shift), ARR(Auto repeat rate);
-  // 모든 움직임에 반응하면 너무 빨리 움직여버린다
-  // 우선 한칸 움직인다. -> 150 ms을 기다린다(DAS) -> 그리고 인풋이 그대로 있으면 30ms마다 테트로를 움직인다.(ARR)
-  // DAS = 150ms , ASS = 40ms
+  // 모든 움직임에 반응하면 너무 빨리 움직여버린다. 픽셀 단위를 설정하고 이에 맞춰 움직여야 테트로가 날아가지 않는다.
   // input은 한번만
 
    // start tracking pointer moves
    tetrisGameContainer.onpointermove = function(event) {
-    // moving the slider: listen on the thumb, as all pointer events are retargeted to it
-   // pointerMoveFlag = true;
+
+   // if (gestureLocked) return;
+
     let xDifference = event.clientX - startX;
+    let yDifference = event.clientY - startY;
+    
+  if(Math.abs(xDifference) < Math.abs(yDifference)) return;
   
   if(xDifference > MOVE_THRESHOLD){
     let keyName = 'ArrowRight';
     moveToRight(keyName);
 
     startX = event.clientX;
+
   
   }
 
@@ -1109,6 +1108,7 @@ tetrisGameContainer.onpointerdown = function(event) {
     startX = event.clientX;
   
   }  
+   
 
   };
 
@@ -1120,7 +1120,7 @@ tetrisGameContainer.onpointerdown = function(event) {
     if(yDifference > MOVE_THRESHOLD){
       let keyName = 'Space';
       dropDown(keyName);
-      
+
     }
 
     if(yDifference === 0) rotateTetro();
