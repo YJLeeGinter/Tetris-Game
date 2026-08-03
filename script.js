@@ -34,8 +34,6 @@ const ghostTetroPosArr = [];
 class Tetromino {
     constructor(name, shape, color) {
       this.name = name;  
-      this.shape = shape;  // 2D Array representing the Tetromino
-      // 정사각형 형태의 배열만 입력하도록 제한한다
       this.color = color;  // Color of the Tetromino
       tetroArr.push(this);
       this.firstColsStartPos = 3;  // Starting positions
@@ -43,6 +41,11 @@ class Tetromino {
       this._size;
       this.active = 0;
       this.rotatedShape = []; // 빈 배열을 truty value. truty or false value 차이점이 버그를 발생시킬 수 있다.
+      // 정사각형 형태의 배열만 입력하도록 제한한다.
+      this.shape = shape;  // 2D Array representing the Tetromino
+      if(this.shape.length != this.shape[0].length){
+        throw new Error("Insert 2D square matrix.");
+      }
     } 
 
     // 각 테트로 크기 구하기
@@ -76,8 +79,7 @@ class Tetromino {
 
     deleteRotatedShape() {
       this.rotatedShape.length = 0;
-    }
-   
+    }  
 }
 
 const T_Tetromino = new Tetromino(
@@ -458,9 +460,8 @@ function isNextLeftEmpty(currentTetrominoArr){
 }
 
 function moveToLeft(keyName) {
-  checkGameOver();
+
   const currentTetrominoArr = findCurrentStat(tetrisTableDataArr, {currentStatus : 1});
-  const activeTetromino = findActiveTetro();
 
 // 행과 열을 바꿔서 확인. 
 // 열에 데이터가 하나만 있을때
@@ -648,6 +649,8 @@ function dropDown(keyName){
   console.log(keyName)
   const currentTetrominoArr = findCurrentStat(tetrisTableDataArr, {currentStatus : 1});
   deleteTetrisTable();
+  console.log(currentTetrominoArr);
+  // 다 그려지기도 전에 여러번 누르면 에러 발생
 
   for(let i = 0; i < ghostTetroPosArr.length; i++){
     tetrisTableDataArr[currentTetrominoArr[i].rowIndex][currentTetrominoArr[i].colIndex] = 0;
@@ -799,7 +802,6 @@ function delay(ms) {
 }
 
 // 게임이 시작되면 밑으로 계속 내려가는 것은 디폴트
-
 function moveTetromino(){
  
   const currentTetrominoArr = findCurrentStat(tetrisTableDataArr, {currentStatus : 1});
@@ -1023,13 +1025,15 @@ function checkGameOver(){
   alert('Game Over');
   tetrisGameContainer.classList.remove('tetris-game-container-active');
   nextTetrominoArr.pop();
-  deactivateTetro();
+  deactivateTetro();  
 
   gameStartBtn.disabled = false;
   
   tetrisTableDataArr.forEach(eachRow => eachRow.fill(0));
   deleteTetrisTable();
   deleteTetrominoTable();
+  lineCounter = 0;
+
   console.log('game over!', tetrisTableDataArr);
   return true;
   }
@@ -1040,6 +1044,7 @@ function checkGameOver(){
 function startGame(event){
     event.preventDefault(); 
     gameStartBtn.disabled = true;
+    if(lineCounter === 0) lineNumberContainer.textContent = 0;
     tetrisGameContainer.classList.add('tetris-game-container-active');
     drawEmptyTetrisTable();
     
@@ -1050,6 +1055,7 @@ function startGame(event){
     drawFirstCurrentTetro(firstTetro);
 
     speed = speedInfo.base;
+    alert('game start')
     
     timerID = setTimeout(moveTetromino, speed);
 }
@@ -1073,13 +1079,12 @@ gamePauseBtn.addEventListener('click', pauseGame);
 let startX = 0;
 let startY = 0;
 
-const thresholdX = 30;
-const thresholdY = 35;
-
 let xFlag= false;
 
 tetrisGameContainer.onpointerdown = function(event) {
   event.preventDefault();
+
+  const threshold = 30;
 
   // retarget all pointer events (until pointerup) to tetrisGameContainer
   tetrisGameContainer.setPointerCapture(event.pointerId);
@@ -1094,14 +1099,19 @@ tetrisGameContainer.onpointerdown = function(event) {
    tetrisGameContainer.onpointermove = function(event) {
 
     let xDifference = event.clientX - startX;
-    console.log('pointerUP')
-    if (xDifference > thresholdX) {
+    let yDifference = event.clientY - startY;
+
+    if(Math.abs(xDifference) < Math.abs(yDifference)) return;
+    
+   // 좌우로 움직이는 것과 아래로 가는 것을 비교하여 더 큰 것에 가중치를 둔다.
+
+    if (xDifference > threshold) {
       let keyName = 'ArrowRight';
       moveToRight(keyName);
       startX = event.clientX;   // Reset for repeated movement
       xFlag = true;
 
-    } else if (xDifference < -thresholdX) {
+    } else if (xDifference < -threshold) {
       let keyName = 'ArrowLeft';
       moveToLeft(keyName);
       startX = event.clientX;   // Reset for repeated movement
@@ -1116,7 +1126,7 @@ tetrisGameContainer.onpointerdown = function(event) {
   
     let yDifference = event.clientY - startY;
 
-   if(!xFlag && yDifference > thresholdY){
+   if(!xFlag && yDifference > threshold){
     let keyName = 'Space';
       dropDown(keyName);
       startY = event.clientY;
@@ -1130,7 +1140,12 @@ tetrisGameContainer.onpointerdown = function(event) {
     tetrisGameContainer.onpointerup = null;
     // ...also process the "drag end" if needed
 
-
   };
 };
 
+// 버그
+// 1. dropdown
+// 2. 모바일 환경에서 x좌표랑 y좌표 가중치 문제
+// 3. 유령 테트로 좌표 계속적인 계산 
+// 4. 맨 밑으로 내려와서 움직이는 거
+// 5. 꽉 찼을때 
